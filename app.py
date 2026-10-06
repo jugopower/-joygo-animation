@@ -39,11 +39,11 @@ def generate():
         fps = 30
         frames = duration * fps
         if effect == 'pan':
-            vf = f"zoompan=z='1.08':x='(iw-iw/zoom)*on/{frames}':y='(ih-ih/zoom)/2':d={frames}:s=1280x720:fps={fps},fade=t=in:st=0:d=.5,fade=t=out:st={max(0,duration-.6)}:d=.6,format=yuv420p"
+            vf = f"zoompan=z='1.08':x='(iw-iw/zoom)*on/{frames}':y='(ih-ih/zoom)/2':d={frames}:s=1280x720:fps={fps},fade=t=in:st=0:d=0.5,fade=t=out:st={max(0, duration - 0.6):.1f}:d=0.6,format=yuv420p"
         elif effect == 'gentle':
-            vf = f"zoompan=z='1.03+0.00018*on':x='(iw-iw/zoom)/2':y='(ih-ih/zoom)/2':d={frames}:s=1280x720:fps={fps},fade=t=in:st=0:d=.5,fade=t=out:st={max(0,duration-.6)}:d=.6,format=yuv420p"
+            vf = f"zoompan=z='1.03+0.00018*on':x='(iw-iw/zoom)/2':y='(ih-ih/zoom)/2':d={frames}:s=1280x720:fps={fps},fade=t=in:st=0:d=0.5,fade=t=out:st={max(0, duration - 0.6):.1f}:d=0.6,format=yuv420p"
         else:
-            vf = f"zoompan=z='min(zoom+0.00045,1.10)':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d={frames}:s=1280x720:fps={fps},fade=t=in:st=0:d=.5,fade=t=out:st={max(0,duration-.6)}:d=.6,format=yuv420p"
+            vf = f"zoompan=z='min(zoom+0.00045,1.10)':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d={frames}:s=1280x720:fps={fps},fade=t=in:st=0:d=0.5,fade=t=out:st={max(0, duration - 0.6):.1f}:d=0.6,format=yuv420p"
         ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
         cmd = [ffmpeg, '-y', '-loop', '1', '-i', src, '-vf', vf, '-t', str(duration), '-r', str(fps), '-an', '-c:v', 'libx264', '-preset', 'veryfast', '-movflags', '+faststart', out_path]
         p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=120)
