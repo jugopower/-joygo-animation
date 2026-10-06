@@ -1,0 +1,3 @@
+Flask>=3.0,<4
+replicate>=1.0
+gunicorn>=22

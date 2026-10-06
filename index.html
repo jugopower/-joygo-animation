@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Joy Go Animation Beta 0.2</title>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif;background:#eef7f0;margin:0;color:#173b2b}
+main{max-width:760px;margin:auto;padding:22px}.card{background:white;border-radius:20px;padding:20px;box-shadow:0 8px 30px #0001}
+h1{font-size:25px;margin:0 0 8px}.tag{color:#567466;margin-bottom:18px}
+label{font-weight:700;display:block;margin:16px 0 7px}input,textarea,select{box-sizing:border-box;width:100%;font-size:17px;padding:13px;border:1px solid #bdd2c3;border-radius:12px}
+textarea{min-height:105px}button{width:100%;margin-top:20px;padding:16px;border:0;border-radius:14px;background:#176b45;color:white;font-size:19px;font-weight:800}
+button:disabled{opacity:.5}.status{margin-top:16px;padding:13px;background:#f4f8f5;border-radius:12px;white-space:pre-wrap}
+video{width:100%;margin-top:16px;border-radius:14px;background:#111}.small{font-size:13px;color:#60756a}
+</style></head>
+<body><main><div class="card">
+<h1>🎬 Joy Go Animation Beta 0.2</h1>
+<div class="tag">獨立 MP4 實測版｜不連接 Joy Go Platform</div>
+<label>朱老師照片</label><input id="photo" type="file" accept="image/*">
+<label>動畫內容</label><textarea id="prompt">朱老師坐在圍棋盤前，微笑向大家介紹圍棋，動作自然，鏡頭穩定，溫暖明亮的圍棋教室。</textarea>
+<label>測試長度</label><select id="duration"><option value="5">5 秒</option><option value="10">10 秒</option></select>
+<button id="go">🎬 生成測試動畫 MP4</button>
+<div id="status" class="status">等待測試。</div>
+<video id="video" controls hidden></video>
+<div class="small">API 金鑰只放在伺服器環境變數，不會放進這個網頁。</div>
+</div></main>
+<script>
+const go=document.querySelector('#go'), st=document.querySelector('#status'), vid=document.querySelector('#video');
+go.onclick=async()=>{
+ const f=document.querySelector('#photo').files[0];
+ if(!f){st.textContent='請先選擇朱老師照片。';return}
+ go.disabled=true; vid.hidden=true; st.textContent='正在上傳並生成影片，請稍候…';
+ const fd=new FormData(); fd.append('photo',f); fd.append('prompt',document.querySelector('#prompt').value); fd.append('duration',document.querySelector('#duration').value);
+ try{
+   const r=await fetch('/api/generate',{method:'POST',body:fd});
+   const d=await r.json();
+   if(!r.ok) throw new Error(d.error||'生成失敗');
+   st.textContent='✅ MP4 已生成。';
+   vid.src=d.video_url; vid.hidden=false; vid.play().catch(()=>{});
+ }catch(e){st.textContent='❌ '+e.message}
+ finally{go.disabled=false}
+};
+</script></body></html>
